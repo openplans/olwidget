@@ -217,8 +217,8 @@ class BaseVectorLayer(forms.Widget):
 
     def get_extra_context(self):
         """Hook that subclasses can override to add extra data for use
-        by the javascript in self.template. This is invoked by
-        self.render().
+        by the javascript in self.template. This should be invoked by
+        self.prepare().
 
         Note that the base class itself doesn't invoke this, but
         subclasses which render templates typically do.  You'll also
