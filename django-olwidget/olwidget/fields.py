@@ -41,7 +41,6 @@ class EditableLayerField(GeometryField):
         kwargs['widget'] = kwargs.get('widget', EditableLayer(options))
         super(EditableLayerField, self).__init__(**kwargs)
 
-
 class InfoLayerField(forms.fields.CharField):
     """
     Equivalent to:
