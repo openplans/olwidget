@@ -117,7 +117,7 @@ def fix_cleaned_data(cleaned_data, initial_data_keymap):
                 cleaned_data[keys[0]] = vals
     return cleaned_data
 
-def apply_maps_to_modelform_fields(fields, maps, default_options=None,
+def apply_maps_to_modelform_fields(fields, maps, default_options=None, 
                                    default_template=None, default_field_class=None):
     """
     Rearranges fields to match those defined in ``maps``.  ``maps`` is a list

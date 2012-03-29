@@ -1,8 +1,8 @@
 from django import forms
+
 from olwidget.widgets import Map, EditableLayer, InfoLayer
 
 from django.contrib.gis.forms.fields import GeometryField
-
 
 class MapField(forms.fields.Field):
     """

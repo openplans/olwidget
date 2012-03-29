@@ -106,8 +106,10 @@ class Map(forms.Widget):
         by the javascript in self.template. This is invoked by
         self.render().
 
-        You'll also want to override the template to make use of the
-        provided data.
+        Return value should be a dictionary where keys are strings and
+        values are valid javascript, eg. JSON-encoded data.  You'll
+        also want to override the template to make use of the provided
+        data.
         """
         return {}
 
