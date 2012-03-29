@@ -97,23 +97,34 @@ var olwidget = {
         },
         physical: function() {
             return new OpenLayers.Layer.Google("Google Physical",
-                    {sphericalMercator: true, type: G_PHYSICAL_MAP});
+                    {sphericalMercator: true, type: google.maps.MapTypeId.TERRAIN});
         },
         satellite: function() {
             return new OpenLayers.Layer.Google("Google Satellite",
-                    {sphericalMercator: true, type: G_SATELLITE_MAP,
+                    {sphericalMercator: true, type: google.maps.MapTypeId.SATELLITE,
                         numZoomLevels: 22});
         },
         hybrid: function() {
             return new OpenLayers.Layer.Google("Google Hybrid",
-                    {sphericalMercator: true, type: G_HYBRID_MAP, numZoomLevels: 20});
+                    {sphericalMercator: true, type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20});
         }
     },
     yahoo: {
         map: function(type) {
+            if (type != 'map') {
+                return this[type]();
+            }
             return new OpenLayers.Layer.Yahoo("Yahoo",
                     {sphericalMercator: true, numZoomLevels: 20});
-        }
+        },
+        satellite: function(type) {
+            return new OpenLayers.Layer.Yahoo("Yahoo",
+                    {type: YAHOO_MAP_SAT, sphericalMercator: true, numZoomLevels: 20});
+        },
+        hybrid: function(type) {
+            return new OpenLayers.Layer.Yahoo("Yahoo",
+                    {type: YAHOO_MAP_HYB, sphericalMercator: true, numZoomLevels: 20});
+        },
     },
     ve: {
         map: function(type) {
@@ -128,7 +139,7 @@ var olwidget = {
 
             var typeCode = this.types[type]();
             return new OpenLayers.Layer.VirtualEarth("Bing Maps (" + type + ")",
-                {sphericalMercator: true, minZoomLevel: 2, type: typeCode });
+                {sphericalMercator: true, minZoomLevel: 4, type: typeCode });
         },
         types: {
             road: function() { return VEMapStyle.Road; },
@@ -227,12 +238,13 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         // construct objects for serialized options
         var me = opts.mapOptions.maxExtent;
         opts.mapOptions.maxExtent = new OpenLayers.Bounds(me[0], me[1], me[2], me[3]);
+        if (opts.mapOptions.restrictedExtent) {
+            var re = opts.mapOptions.restrictedExtent;
+            opts.mapOptions.restrictedExtent = new OpenLayers.Bounds(re[0], re[1], re[2], re[3]);
+        }
         opts.mapOptions.projection = new OpenLayers.Projection(opts.mapOptions.projection);
         opts.mapOptions.displayProjection = new OpenLayers.Projection(
             opts.mapOptions.displayProjection);
-        opts.defaultCenter = new OpenLayers.LonLat(opts.defaultLon, opts.defaultLat);
-        opts.defaultCenter.transform(opts.mapOptions.displayProjection,
-                                     opts.mapOptions.projection);
 
         for (var i = 0; i < opts.mapOptions.controls.length; i++) {
             opts.mapOptions.controls[i] = new OpenLayers.Control[opts.mapOptions.controls[i]]();
@@ -1065,12 +1077,12 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         input.value = name;
         input.checked = checked;
         var span = document.createElement("span");
-        OpenLayers.Element.addClass(span, "label");
+        OpenLayers.Element.addClass(span, "olwidgetLabel");
         span.innerHTML = name;
 
         if (layer && (!layer.inRange || !layer.visibility)) {
             input.disabled = true;
-            OpenLayers.Element.addClass(span, "disabled");
+            OpenLayers.Element.addClass(span, "olwidgetDisabled");
         }
 
         var context = {
@@ -1138,7 +1150,7 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
 
         // Optionally create rounded corners
         this.container = document.createElement("div");
-        OpenLayers.Element.addClass(this.container, "container");
+        OpenLayers.Element.addClass(this.container, "olwidgetContainer");
         this.div.appendChild(this.container);
         if (this.roundedCorner) {
             OpenLayers.Rico.Corner.round(this.div, {
@@ -1163,9 +1175,9 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
 
         // Heading
         this.maximize = document.createElement("div");
-        OpenLayers.Element.addClass(this.maximize, "maxmin max");
+        OpenLayers.Element.addClass(this.maximize, "olwidgetMaxMin olwidgetMax");
         this.minimize = document.createElement("div");
-        OpenLayers.Element.addClass(this.minimize, "maxmin min");
+        OpenLayers.Element.addClass(this.minimize, "olwidgetMaxMin olwidgetMin");
         this.minimize.style.display = "none";
         OpenLayers.Event.observe(this.maximize, "click",
             OpenLayers.Function.bindAsEventListener(this.maximizeControl, this)

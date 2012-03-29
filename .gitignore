@@ -1,6 +1,7 @@
-doc-src/_build/*
-doc/*
+docs/_build/
 *.pyc
 *.swp
 .sass-cache
 *egg-info
+.idea*
+.DS_Store
