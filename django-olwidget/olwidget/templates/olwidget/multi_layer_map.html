@@ -1,7 +1,8 @@
 <div id="{{ id }}"></div>
 {{ layer_html|join:"" }}
 <script type="text/javascript">
-    new olwidget.Map("{{ id }}", [
+    {{ setup_custom_layer_types|safe }}
+    var olwidget_{{ id }} = new olwidget.Map("{{ id }}", [
             {{ layer_js|join:"," }}
         ], 
         {{ map_opts|safe }}

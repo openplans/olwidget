@@ -81,10 +81,6 @@ var olwidget = {
                         "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
                     ],
                     { numZoomLevels: 19 });
-        },
-        osmarender: function() {
-            return new OpenLayers.Layer.OSM.Osmarender(
-                    'OpenStreetMap (Osmarender)');
         }
     },
     google: {
@@ -96,7 +92,10 @@ var olwidget = {
                     {sphericalMercator: true, numZoomLevels: 20});
         },
         physical: function() {
-            return new OpenLayers.Layer.Google("Google Physical",
+            return this.terrain();
+        },
+        terrain: function() {
+            return new OpenLayers.Layer.Google("Google Terrain",
                     {sphericalMercator: true, type: google.maps.MapTypeId.TERRAIN});
         },
         satellite: function() {
@@ -188,10 +187,13 @@ var olwidget = {
         }
         return destination;
     },
-
     isCollectionEmpty: function(geom) {
         /* Is the provided collection empty? */
         return !(geom && (geom.constructor != Array || geom[0] != undefined));
+    },
+    _customBaseLayers: {},
+    registerCustomBaseLayers: function(layer_descriptions) {
+        OpenLayers.Util.extend(this._customBaseLayers, layer_descriptions);
     }
 };
 
@@ -269,7 +271,10 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         var layers = [];
         for (var i = 0; i < opts.layers.length; i++) {
             var parts = opts.layers[i].split(".");
-            layers.push(olwidget[parts[0]].map(parts[1]));
+            var map_service = olwidget[parts[0]];
+            var map_type = parts[1];
+
+            layers.push(map_service.map(map_type));
 
             // workaround for problems with Microsoft layers and vector layer
             // drift (see http://openlayers.com/dev/examples/ve-novibrate.html)
